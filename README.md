@@ -1,4 +1,38 @@
-# TacheManager
+
+# 📝 TâcheManager
+
+Mini application Angular pour la gestion de tâches avec :
+
+- Authentification locale
+- Rôles utilisateurs (admin / user)
+- AuthGuard & AdminGuard
+- localStorage pour persistance
+- Interface avec Bootstrap
+
+## 🚀 Lancer le projet
+
+```bash
+npm install
+ng serve
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## TacheManager
+
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
 
