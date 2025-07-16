@@ -1,0 +1,19 @@
+<div class="container mt-5">
+    <h2>Modifier la tâche #{{ id }}</h2>
+
+    <form (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+            <label for="titre" class="form-label">Titre</label>
+            <input id="titre" name="titre" class="form-control" [(ngModel)]="titre" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="3"
+                [(ngModel)]="description"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enregistrer</button>
+        <button type="button" class="btn btn-secondary ms-2" (click)="annuler()">Annuler</button>
+    </form>
+</div>
