@@ -14,23 +14,37 @@ import { AdminComponent } from './admin/admin.component';
 // Définition des routes de l'application
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'login', pathMatch: 'full' }, // Redirection vers la page de connexion par défaut
+    // Redirection par défaut vers login
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+    //  Module d'authentification (lazy loading)
     {
         path: '',
-        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule) // Chargement paresseux du module d'authentification
+        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
     },
-    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] }, // Accès protégé par AuthGuard
+
+    //  Connexion / Inscription publiques
+    { path: 'login', component: LoginComponent },
+    { path: 'register', component: RegisterComponent },
+
+    //  Pages protégées par AuthGuard
+    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
     { path: 'taches', component: TachesComponent, canActivate: [AuthGuard] },
     { path: 'taches/ajouter', component: TaskCreateComponent, canActivate: [AuthGuard] },
-    { path: 'taches/modifier/:id', component: TaskEditComponent, canActivate: [AuthGuard] },
     { path: 'taches/edit/:id', component: TaskEditComponent, canActivate: [AuthGuard] },
-    { path: 'register', component: RegisterComponent }, //  accès public
-    { path: 'login', component: LoginComponent },       //  accès public
     { path: 'task-list', component: TaskListComponent, canActivate: [AuthGuard] },
-    { path: '403', component: UnauthorizedComponent },  // Page d'erreur 403 pour accès non autorisé
-    { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard] },
-    { path: '', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) }, // Page d'accueil
-    { path: 'admin', canActivate: [AdminGuard], loadComponent: () => import('./dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
     { path: 'profile', loadComponent: () => import('./profil/user-profile.component').then(m => m.UserProfileComponent), canActivate: [AuthGuard] },
     { path: 'calendar', loadComponent: () => import('./calendar/task-calendar.component').then(m => m.TaskCalendarComponent), canActivate: [AuthGuard] },
+
+    //  Admin uniquement
+    { path: 'admin', loadComponent: () => import('./dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent), canActivate: [AuthGuard, AdminGuard] },
+
+    //  403 non autorisé
+    { path: '403', component: UnauthorizedComponent },
+
+    //  Page d’accueil publique
+    { path: 'home', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) },
+
+
+    { path: '**', redirectTo: 'login' }
 ];

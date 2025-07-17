@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TaskService } from '../task.service';
+import { TaskService, Task } from '../task.service';
 
 @Component({
   selector: 'app-task-edit',
@@ -13,33 +13,31 @@ import { TaskService } from '../task.service';
 })
 export class TaskEditComponent implements OnInit {
   id!: number;
-  titre: string = '';
-  description: string = '';
+
+  task: Task = {
+    id: 0,
+    titre: '',
+    description: '',
+    date: '',
+    faite: false
+  };
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.id = Number(this.route.snapshot.paramMap.get('id'));
-    const task = this.taskService.getTasks().find(t => t.id === this.id);
-    if (task) {
-      this.titre = task.titre;
-      this.description = task.description || '';
-    }
+    this.taskService.getTaskById(this.id).subscribe((data) => {
+      this.task = data;
+    });
   }
 
-  onSubmit() {
-    this.taskService.updateTask(this.id, this.titre, this.description);
-    this.router.navigate(['/taches']);
+  update(): void {
+    this.taskService.updateTask(this.id, this.task).subscribe(() => {
+      this.router.navigate(['/taches']);
+    });
   }
-
-
-  annuler() {
-    this.router.navigate(['/taches']);
-  }
-
-
 }

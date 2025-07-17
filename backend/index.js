@@ -72,3 +72,12 @@ app.put('/api/tasks/:id', (req, res) => {
 app.listen(PORT, () => {
     console.log(` Backend API en ligne sur http://localhost:${PORT}`);
 });
+
+app.get('/api/tasks/:id', (req, res) => {
+    const id = req.params.id;
+    db.get(`SELECT * FROM tasks WHERE id = ?`, [id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: 'Tâche non trouvée' });
+        res.json(row);
+    });
+});

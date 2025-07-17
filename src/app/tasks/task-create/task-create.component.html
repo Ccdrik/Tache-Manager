@@ -2,9 +2,20 @@
     <h2>Ajouter une tâche</h2>
     <form (ngSubmit)="add()">
         <div class="mb-3">
-            <input type="text" class="form-control" placeholder="Titre de la tâche" [(ngModel)]="titre" name="titre"
-                required />
+            <label for="titre" class="form-label">Titre</label>
+            <input type="text" class="form-control" id="titre" [(ngModel)]="titre" name="titre" required>
         </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" [(ngModel)]="description" name="description"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" [(ngModel)]="date" name="date">
+        </div>
+
         <button type="submit" class="btn btn-success">Ajouter</button>
     </form>
 </div>

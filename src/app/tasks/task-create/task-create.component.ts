@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TaskService } from '../task.service';
+import { TaskService, Task } from '../task.service';
 
 @Component({
   selector: 'app-task-create',
@@ -13,13 +13,23 @@ import { TaskService } from '../task.service';
 })
 export class TaskCreateComponent {
   titre = '';
+  description = '';
+  date = '';
 
   constructor(private taskService: TaskService, private router: Router) { }
 
   add(): void {
     if (this.titre.trim()) {
-      this.taskService.addTask(this.titre.trim());
-      this.router.navigate(['/taches']);
+      const newTask: Omit<Task, 'id'> = {
+        titre: this.titre.trim(),
+        description: this.description.trim(),
+        date: this.date,
+        faite: false
+      };
+
+      this.taskService.addTask(newTask).subscribe(() => {
+        this.router.navigate(['/taches']);
+      });
     }
   }
 }

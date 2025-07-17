@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common'; // Importation de CommonModule p
 import { TaskService } from '../task.service'; // Import du service TaskService
 import { RouterModule } from '@angular/router'; // Importation de FormsModule pour la gestion des formulaires
 import { AlertComponent } from '../../shared/alert.component';
+import { Task } from '../task.service';
+
 @Component({
   selector: 'app-task-list',
   standalone: true,
@@ -12,32 +14,40 @@ import { AlertComponent } from '../../shared/alert.component';
 })
 export class TaskListComponent implements OnInit {
 
-  allTasks: { id: number; titre: string; faite: boolean; description?: string }[] = [];
-  tasks: { id: number; titre: string; faite: boolean; description?: string }[] = [];
-  filter: 'all' | 'done' | 'undone' = 'all';
+  allTasks: Task[] = [];
+  tasks: Task[] = [];
+  filter: 'all' | 'done' | 'undone' = 'all'; //  Filtre pour les tâches
 
   //  Injection du service via le constructeur
   constructor(private taskService: TaskService) { }
 
   //  Récupération des tâches au démarrage du composant
   ngOnInit(): void {
-    this.allTasks = this.taskService.getTasks();
-    this.applyFilter();
-  }
-
-
-  toggleDone(id: number): void {
-    this.taskService.toggleDone(id);
-    this.allTasks = this.taskService.getTasks();
-    this.applyFilter();
+    this.taskService.getTasks().subscribe((data) => {
+      this.allTasks = data;
+      this.applyFilter();
+    });
   }
 
   deleteTask(id: number): void {
-    this.taskService.deleteTask(id);
-    this.allTasks = this.taskService.getTasks();
-    this.applyFilter();
-    this.showAlert('Tâche supprimée avec succès.', 'success');
+    this.taskService.deleteTask(id).subscribe(() => {
+      this.taskService.getTasks().subscribe(data => {
+        this.allTasks = data;
+        this.applyFilter();
+        this.showAlert('Tâche supprimée avec succès.', 'success');
+      });
+    });
   }
+
+  toggleDone(task: Task): void {
+    this.taskService.toggleDone(task).subscribe(() => {
+      this.taskService.getTasks().subscribe(data => {
+        this.allTasks = data;
+        this.applyFilter();
+      });
+    });
+  }
+
   applyFilter(): void {
     switch (this.filter) {
       case 'done':

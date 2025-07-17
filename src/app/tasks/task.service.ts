@@ -1,63 +1,51 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-// Déclare ce service comme injectable dans tout le projet
+//  Définition du type de tâche
+export interface Task {
+    id: number;
+    titre: string;
+    description?: string;
+    faite: boolean;
+    date?: string;
+}
+
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'root'
 })
 export class TaskService {
-    // Liste des tâches simulée
-    private tasks: { id: number; titre: string; faite: boolean; description?: string }[] = [
-        { id: 1, titre: 'Tâche 1', faite: false, description: 'desc 1' },
-        { id: 2, titre: 'Tâche 2', faite: true, description: 'desc 2' }
-    ];
+    private apiUrl = 'http://localhost:3000/api/tasks'; //  URL backend Node.js
 
+    constructor(private http: HttpClient) { }
 
-    //  Méthode pour récupérer toutes les tâches
-    getTasks(): { id: number; titre: string; faite: boolean; description?: string }[] {
-        return this.tasks;
+    //  Récupérer toutes les tâches (GET)
+    getTasks(): Observable<Task[]> {
+        return this.http.get<Task[]>(this.apiUrl);
     }
 
-    //  Ajouter une tâche
-    addTask(titre: string) {
-        const nouvelleTache = {
-            id: Date.now(), // identifiant unique
-            titre,
-            description: '',
-            faite: false
-        };
-        this.tasks.push(nouvelleTache);
-        this.saveTasks(); // sauvegarde dans le localStorage
+    //  Ajouter une tâche (POST)
+    addTask(task: Omit<Task, 'id'>): Observable<Task> {
+        return this.http.post<Task>(this.apiUrl, task);
     }
 
-    // Marquer une tâche comme faite
-    toggleDone(id: number) {
-        const task = this.tasks.find(t => t.id === id);
-        if (task) task.faite = !task.faite;
-        this.saveTasks(); // sauvegarde dans le localStorage
+    //  Supprimer une tâche (DELETE)
+    deleteTask(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    //  Supprimer une tâche
-    deleteTask(id: number) {
-        this.tasks = this.tasks.filter(t => t.id !== id);
-        this.saveTasks(); // sauvegarde dans le localStorage
-    }
-    private saveTasks(): void {
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
-    }
-    constructor() {
-        const storedTasks = localStorage.getItem('tasks');
-        if (storedTasks) {
-            this.tasks = JSON.parse(storedTasks);
-        }
-    }
-    updateTask(id: number, titre: string, description: string): void {
-        const task = this.tasks.find(t => t.id === id);
-        if (task) {
-            task.titre = titre;
-            task.description = description;
-            this.saveTasks();
-        }
+    //  Modifier une tâche (PUT)
+    updateTask(id: number, task: Task): Observable<Task> {
+        return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
     }
 
+    //  Inverser l'état "faite" (PUT)
+    toggleDone(task: Task): Observable<any> {
+        const updatedTask = { ...task, faite: task.faite ? 0 : 1 };
+        return this.http.put(`${this.apiUrl}/${task.id}`, updatedTask);
+    }
 
+    getTaskById(id: number): Observable<Task> {
+        return this.http.get<Task>(`${this.apiUrl}/${id}`);
+    }
 }

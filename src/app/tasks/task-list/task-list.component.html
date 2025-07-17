@@ -23,7 +23,7 @@
     <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
 
         <div class="flex-grow-1">
-            <span class="fw-bold" [class.text-decoration-line-through]="task.faite" (click)="toggleDone(task.id)"
+            <span class="fw-bold" [class.text-decoration-line-through]="task.faite" (click)="toggleDone(task)"
                 style="cursor: pointer">
                 {{ task.titre }}
             </span>
@@ -32,7 +32,7 @@
         </div>
 
         <div>
-            <button class="btn btn-outline-success btn-sm me-2" (click)="toggleDone(task.id)">
+            <button class="btn btn-outline-success btn-sm me-2" (click)="toggleDone(task)">
                 {{ task.faite ? 'Annuler' : 'Terminer' }}
             </button>
             <button class="btn btn-outline-danger btn-sm me-2" (click)="deleteTask(task.id)">
