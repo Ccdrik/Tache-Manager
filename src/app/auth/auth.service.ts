@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+
 @Injectable({
     providedIn: 'root',
 })
@@ -27,7 +28,7 @@ export class AuthService {
         const match = users.find(u => u.email === email && u.password === password);
 
         if (match) {
-            localStorage.setItem(this.currentUserKey, email);
+            localStorage.setItem(this.currentUserKey, JSON.stringify(match)); //  on stocke tout l’objet
             return true;
         }
 
@@ -46,14 +47,11 @@ export class AuthService {
 
     // Récupère l’email de l’utilisateur connecté
     getUser(): string | null {
-        return localStorage.getItem(this.currentUserKey);
+        const user = this.getCurrentUser();
+        return user?.email || null;
     }
 
-    // Récupère tous les utilisateurs
-    private getAllUsers(): { email: string; password: string; role: string }[] {
-        const data = localStorage.getItem(this.storageKey);
-        return data ? JSON.parse(data) : [];
-    }
+
     getRole(): string | null {
         const email = this.getUser();
         const users = this.getAllUsers();
@@ -62,5 +60,30 @@ export class AuthService {
     }
     isAdmin(): boolean {
         return this.getRole() === 'admin';
+
     }
+    // 🔓 Permet à l'admin de voir la liste des utilisateurs
+    getAllUsers(): { email: string; password: string; role: string }[] {
+        const data = localStorage.getItem(this.storageKey);
+        return data ? JSON.parse(data) : [];
+    }
+
+    // 🔴 Supprimer un utilisateur (sauf lui-même)
+    deleteUser(email: string): void {
+        const users = this.getAllUsers().filter(u => u.email !== email);
+        localStorage.setItem(this.storageKey, JSON.stringify(users));
+    }
+
+    // 🟢 Promouvoir un utilisateur en admin
+    promoteToAdmin(email: string): void {
+        const users = this.getAllUsers().map(u =>
+            u.email === email ? { ...u, role: 'admin' } : u
+        );
+        localStorage.setItem(this.storageKey, JSON.stringify(users));
+    }
+
+    getCurrentUser(): any {
+        return JSON.parse(localStorage.getItem('currentUser') || 'null');
+    }
+
 }

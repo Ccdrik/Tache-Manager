@@ -1,0 +1,13 @@
+<div class="container mt-5 text-center">
+    <h1 class="mb-4">TâcheManager 📝</h1>
+
+    <div *ngIf="isLoggedIn(); else invite">
+        <h2>Bienvenue, {{ userEmail }} ! 👋</h2>
+        <p>Vous pouvez maintenant gérer vos tâches dans l’espace personnel.</p>
+    </div>
+
+    <ng-template #invite>
+        <h2>Bienvenue sur TâcheManager ! 🙋‍♂️</h2>
+        <p>Veuillez vous connecter ou créer un compte pour accéder à vos tâches.</p>
+    </ng-template>
+</div>

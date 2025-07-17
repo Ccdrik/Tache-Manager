@@ -29,5 +29,8 @@ export const routes: Routes = [
     { path: 'task-list', component: TaskListComponent, canActivate: [AuthGuard] },
     { path: '403', component: UnauthorizedComponent },  // Page d'erreur 403 pour accès non autorisé
     { path: 'admin', component: AdminComponent, canActivate: [AuthGuard, AdminGuard] },
-
+    { path: '', loadComponent: () => import('./home/home.component').then(m => m.HomeComponent) }, // Page d'accueil
+    { path: 'admin', canActivate: [AdminGuard], loadComponent: () => import('./dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+    { path: 'profile', loadComponent: () => import('./profil/user-profile.component').then(m => m.UserProfileComponent), canActivate: [AuthGuard] },
+    { path: 'calendar', loadComponent: () => import('./calendar/task-calendar.component').then(m => m.TaskCalendarComponent), canActivate: [AuthGuard] },
 ];

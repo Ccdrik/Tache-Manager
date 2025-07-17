@@ -1,3 +1,24 @@
+<app-alert [message]="alertMessage" [type]="alertType"></app-alert>
+
+
+<div class="text-end mb-3">
+    <button class="btn btn-outline-dark" (click)="printTasks()">
+        Imprimer / Exporter
+    </button>
+</div>
+
+
+
+<div class="btn-group mb-3">
+    <button class="btn btn-outline-secondary" [class.active]="filter === 'all'"
+        (click)="filter = 'all'; applyFilter()">Toutes</button>
+    <button class="btn btn-outline-secondary" [class.active]="filter === 'undone'"
+        (click)="filter = 'undone'; applyFilter()">À faire</button>
+    <button class="btn btn-outline-secondary" [class.active]="filter === 'done'"
+        (click)="filter = 'done'; applyFilter()">Terminées</button>
+</div>
+
+
 <ul class="list-group mt-3">
     <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
 
@@ -11,6 +32,9 @@
         </div>
 
         <div>
+            <button class="btn btn-outline-success btn-sm me-2" (click)="toggleDone(task.id)">
+                {{ task.faite ? 'Annuler' : 'Terminer' }}
+            </button>
             <button class="btn btn-outline-danger btn-sm me-2" (click)="deleteTask(task.id)">
                 Supprimer
             </button>
