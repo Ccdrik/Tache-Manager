@@ -3,26 +3,32 @@
 
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto">
-            <li class="nav-item" *ngIf="isLoggedIn()">
+            <!-- Dashboard selon le rôle -->
+            <li class="nav-item" *ngIf="isLoggedIn() && !isAdmin()">
                 <a class="nav-link" routerLink="/dashboard">Dashboard</a>
             </li>
+            <li class="nav-item" *ngIf="isLoggedIn() && isAdmin()">
+                <a class="nav-link text-danger" routerLink="/admin">Tableau de bord Admin</a>
+            </li>
+
+            <!-- Tâches pour tous les connectés -->
             <li class="nav-item" *ngIf="isLoggedIn()">
                 <a class="nav-link" routerLink="/taches">Tâches</a>
-            </li>
-            <li class="nav-item" *ngIf="isAdmin()">
-                <a class="nav-link text-danger" href="#">Admin</a>
             </li>
         </ul>
 
         <ul class="navbar-nav ms-auto">
+            <!-- Liens non connecté -->
             <li *ngIf="!isLoggedIn()" class="nav-item">
                 <a class="nav-link" routerLink="/register">Inscription</a>
             </li>
             <li *ngIf="!isLoggedIn()" class="nav-item">
                 <a class="nav-link" routerLink="/login">Connexion</a>
             </li>
+
+            <!-- Connecté -->
             <li *ngIf="isLoggedIn()" class="nav-item">
-                <span class="navbar-text me-3">👤 {{ getUser() }}</span>
+                <span class="navbar-text me-3">{{ getUser() }}</span>
             </li>
             <li *ngIf="isLoggedIn()" class="nav-item">
                 <button class="btn btn-outline-secondary btn-sm" (click)="logout()">Déconnexion</button>

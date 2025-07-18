@@ -1,13 +1,34 @@
-<div class="container text-center mt-5">
-    <h1 class="mb-4">Bienvenue sur TâcheManager !</h1>
-    <p class="lead">Commencez à organiser vos tâches dès maintenant.</p>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Tableau de bord utilisateur</h2>
 
-    <a routerLink="/taches" class="btn btn-primary mt-3">Voir mes tâches</a>
-</div>
+    <div class="row mb-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Tâches créées</h5>
+                    <p class="display-6">{{ totalTasks }}</p>
+                </div>
+            </div>
+        </div>
 
-<div>
-    <h2>Bienvenue sur votre tableau de bord</h2>
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Tâches terminées</h5>
+                    <p class="display-6">{{ doneTasks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <app-task-form></app-task-form> <!-- 🔵 Formulaire pour ajouter une tâche -->
-    <app-task-list></app-task-list> <!-- 🟢 Liste des tâches -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Répartition des tâches</h5>
+                    <canvas baseChart [data]="pieChartData" [type]="'pie'" [options]="pieChartOptions"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

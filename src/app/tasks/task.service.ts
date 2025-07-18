@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
-//  Définition du type de tâche
 export interface Task {
     id: number;
     titre: string;
@@ -13,78 +13,74 @@ export interface Task {
     auteur?: string;
 }
 
-export interface ChecklistItem {
-    id: number;
-    taskId: number;
-    content: string;
-    done: boolean;
-}
-
 @Injectable({
     providedIn: 'root'
 })
 export class TaskService {
-    private apiUrl = 'http://localhost:3000/api/tasks'; //  URL backend Node.js
+    private apiUrl = 'http://localhost:3000/tasks'; // backend API
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private authService: AuthService) { }
 
-    //  Récupérer toutes les tâches (GET)
+    private fromApi(apiTask: any): Task {
+        return {
+            id: apiTask.id,
+            titre: apiTask.title,
+            description: apiTask.description,
+            date: apiTask.date,
+            faite: !!apiTask.done,
+            checklist: typeof apiTask.checklist === 'string' ? JSON.parse(apiTask.checklist) : (apiTask.checklist || []),
+            auteur: apiTask.auteur
+        };
+    }
+
+    private toApi(task: Omit<Task, 'id'> | Task): any {
+        return {
+            title: task.titre,
+            description: task.description,
+            date: task.date,
+            done: task.faite,
+            checklist: JSON.stringify(task.checklist || []),
+            auteur: task.auteur
+        };
+    }
+
     getTasks(): Observable<Task[]> {
-        return this.http.get<Task[]>(this.apiUrl);
+        return this.http.get<any[]>(this.apiUrl).pipe(
+            map(tasks => tasks.map(t => this.fromApi(t)))
+        );
     }
 
-    //  Ajouter une tâche (POST)
+    getTaskById(id: number): Observable<Task> {
+        return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+            map(t => this.fromApi(t))
+        );
+    }
+
     addTask(task: Omit<Task, 'id'>): Observable<Task> {
-        return this.http.post<Task>(this.apiUrl, task);
+        const userEmail = this.authService.getUser() ?? '';  // Si null, on met ''
+        const newTask = { ...task, auteur: userEmail };
+        return this.http.post<Task>(this.apiUrl, this.toApi(newTask));
     }
 
-    //  Supprimer une tâche (DELETE)
+    updateTask(id: number, task: Task): Observable<Task> {
+        return this.http.put<any>(`${this.apiUrl}/${id}`, this.toApi(task)).pipe(
+            map(t => this.fromApi(t))
+        );
+    }
+
     deleteTask(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    //  Modifier une tâche (PUT)
-    updateTask(id: number, task: Task): Observable<Task> {
-        return this.http.put<Task>(`${this.apiUrl}/${id}`, task);
+    toggleDone(task: Task): Observable<Task> {
+        const updatedTask = { ...task, faite: !task.faite };
+        return this.updateTask(task.id, updatedTask);
     }
 
-    //  Inverser l'état "faite" (PUT)
-    toggleDone(task: Task): Observable<any> {
-        const updatedTask = { ...task, faite: task.faite ? 0 : 1 };
-        return this.http.put(`${this.apiUrl}/${task.id}`, updatedTask);
-    }
-
-    getTaskById(id: number): Observable<Task> {
-        return this.http.get<Task>(`${this.apiUrl}/${id}`);
-    }
-
-    toggleChecklistItem(task: Task, index: number): Observable<any> {
-
+    toggleChecklistItem(task: Task, index: number): Observable<Task> {
         const updatedChecklist = [...(task.checklist || [])];
-
         updatedChecklist[index].checked = !updatedChecklist[index].checked;
-
-        //  On crée un nouvel objet tâche mis à jour
-        const updatedTask: Task = {
-            ...task,
-            checklist: updatedChecklist
-        };
-
-        return this.updateTask(task.id, updatedTask); // Envoi du PUT
-
+        const updatedTask: Task = { ...task, checklist: updatedChecklist };
+        return this.updateTask(task.id, updatedTask);
     }
-
-
-    getTaskCount(): Observable<{ total: number }> {
-        return this.http.get<{ total: number }>('http://localhost:3000/api/stats/tasks/count');
-    }
-
-    getDoneTaskCount(): Observable<{ done: number }> {
-        return this.http.get<{ done: number }>('http://localhost:3000/api/stats/tasks/done');
-    }
-
-    getUserCount(): Observable<{ total: number }> {
-        return this.http.get<{ total: number }>('http://localhost:3000/api/stats/users/count');
-    }
-
 }

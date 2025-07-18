@@ -46,4 +46,8 @@ export class TaskCreateComponent {
       });
     }
   }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
 }

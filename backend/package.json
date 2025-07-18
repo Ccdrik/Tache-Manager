@@ -8,12 +8,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "chart.js": "^4.5.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "ng2-charts": "^8.0.0",
     "sqlite3": "^5.1.7"
-  }
+  },
+  "description": ""
 }

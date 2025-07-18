@@ -1,33 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService, Task } from '../tasks/task.service';
-import { TaskFormComponent } from '../tasks/task-form.component';
-import { TaskListComponent } from '../tasks/task-list/task-list.component';
-
+import { ChartOptions } from 'chart.js';
+import { NgChartsModule } from 'ng2-charts';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [TaskFormComponent, TaskListComponent],
+  imports: [NgChartsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class UserDashboardComponent implements OnInit {
-  userEmail = '';
-  total = 0;
-  done = 0;
-  pending = 0;
+  totalTasks = 0;
+  doneTasks = 0;
+  undoneTasks = 0;
+
+  public pieChartData = {
+    labels: ['Terminées', 'En cours'],
+    datasets: [
+      {
+        data: [0, 0],
+        backgroundColor: ['#198754', '#0d6efd'],
+      }
+    ],
+  };
+
+  public pieChartOptions: ChartOptions<'pie'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom'
+      }
+    }
+  };
 
   constructor(private taskService: TaskService) { }
 
   ngOnInit(): void {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    this.userEmail = user.email;
-
     this.taskService.getTasks().subscribe((tasks: Task[]) => {
-      const userTasks = tasks.filter(t => t.auteur === this.userEmail);
-      this.total = userTasks.length;
-      this.done = userTasks.filter(t => t.faite).length;
-      this.pending = userTasks.filter(t => !t.faite).length;
+      const currentUser = localStorage.getItem('currentUser');
+      const userEmail = currentUser ? JSON.parse(currentUser).email : null;
+      if (!userEmail) return;
+
+      const userTasks = tasks.filter(t => t.auteur === userEmail);
+
+      this.totalTasks = userTasks.length;
+      this.doneTasks = userTasks.filter(t => t.faite).length;
+      this.undoneTasks = userTasks.filter(t => !t.faite).length;
+
+      this.pieChartData.datasets[0].data = [this.doneTasks, this.undoneTasks];
     });
   }
 }

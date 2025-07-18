@@ -25,7 +25,20 @@ export class TaskListComponent implements OnInit {
   constructor(private taskService: TaskService) { }
 
   ngOnInit(): void {
+    this.loadTasks();
+  }
+
+  loadTasks() {
     this.taskService.getTasks().subscribe(data => {
+      data.forEach(task => {
+        if (typeof task.checklist === 'string') {
+          try {
+            task.checklist = JSON.parse(task.checklist);
+          } catch {
+            task.checklist = [];
+          }
+        }
+      });
       this.allTasks = data;
       this.applyFilter();
     });
@@ -33,20 +46,14 @@ export class TaskListComponent implements OnInit {
 
   deleteTask(id: number): void {
     this.taskService.deleteTask(id).subscribe(() => {
-      this.taskService.getTasks().subscribe(data => {
-        this.allTasks = data;
-        this.applyFilter();
-        this.showAlert('Tâche supprimée avec succès.', 'success');
-      });
+      this.loadTasks();
+      this.showAlert('Tâche supprimée avec succès.', 'success');
     });
   }
 
   toggleDone(task: Task): void {
     this.taskService.toggleDone(task).subscribe(() => {
-      this.taskService.getTasks().subscribe(data => {
-        this.allTasks = data;
-        this.applyFilter();
-      });
+      this.loadTasks();
     });
   }
 
@@ -80,24 +87,15 @@ export class TaskListComponent implements OnInit {
     this.applyFilter();
   }
 
-  printTasks(): void {
-    window.print();
-  }
-
   showAlert(message: string, type: 'success' | 'danger'): void {
     this.alertMessage = message;
     this.alertType = type;
     setTimeout(() => this.alertMessage = '', 3000);
   }
+
   toggleChecklistItem(task: Task, index: number): void {
     this.taskService.toggleChecklistItem(task, index).subscribe(() => {
-      this.taskService.getTasks().subscribe(data => {
-        this.allTasks = data;
-        this.applyFilter();
-      });
+      this.loadTasks();
     });
   }
-
 }
-
-

@@ -19,7 +19,8 @@ export class TaskEditComponent implements OnInit {
     titre: '',
     description: '',
     date: '',
-    faite: false
+    faite: false,
+    checklist: []
   };
 
   constructor(
@@ -40,4 +41,25 @@ export class TaskEditComponent implements OnInit {
       this.router.navigate(['/taches']);
     });
   }
+
+
+  newChecklistItem: string = '';
+
+  addChecklistItem(): void {
+    if (this.newChecklistItem.trim() && this.task && this.task.checklist) {
+      this.task.checklist.push({ label: this.newChecklistItem.trim(), checked: false });
+      this.newChecklistItem = '';
+    }
+  }
+
+  removeChecklistItem(index: number): void {
+    if (this.task && this.task.checklist) {
+      this.task.checklist.splice(index, 1);
+    }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
 }

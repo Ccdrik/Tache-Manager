@@ -5,6 +5,7 @@ import { TaskService, Task } from '../services/task.service';
 import { NgChartsModule } from 'ng2-charts';
 import { ChartType } from 'chart.js';
 import { ChartOptions } from 'chart.js';
+import { UserService, User } from '../services/user-service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -41,20 +42,24 @@ export class AdminDashboardComponent implements OnInit {
 
 
 
-  constructor(private authService: AuthService, private taskService: TaskService) { }
+  constructor(
+    private authService: AuthService,
+    private taskService: TaskService,
+    private userService: UserService
+  ) { }
 
   ngOnInit(): void {
-    const users = this.authService.getAllUsers();
-    this.totalUsers = users.length;
-
-    users.forEach(user => {
-      const tasksKey = `tasks_${user.email}`;
-      const tasks: Task[] = JSON.parse(localStorage.getItem(tasksKey) || '[]');
-      this.totalTasks += tasks.length;
-      this.doneTasks += tasks.filter(t => t.faite).length;
-      this.undoneTasks += tasks.filter(t => !t.faite).length;
-      this.donePercentage = this.totalTasks > 0 ? Math.round((this.doneTasks / this.totalTasks) * 100) : 0;
-      this.pieChartData.datasets[0].data = [this.doneTasks, this.undoneTasks];
+    const users = this.userService.getAllUsers().subscribe((users: User[]) => {
+      this.totalUsers = users.length;
+      users.forEach((user: User) => {
+        const tasksKey = `tasks_${user.email}`;
+        const tasks: Task[] = JSON.parse(localStorage.getItem(tasksKey) || '[]');
+        this.totalTasks += tasks.length;
+        this.doneTasks += tasks.filter(t => t.faite).length;
+        this.undoneTasks += tasks.filter(t => !t.faite).length;
+        this.donePercentage = this.totalTasks > 0 ? Math.round((this.doneTasks / this.totalTasks) * 100) : 0;
+        this.pieChartData.datasets[0].data = [this.doneTasks, this.undoneTasks];
+      });
     });
 
 

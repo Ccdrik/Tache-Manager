@@ -28,22 +28,21 @@ export class LoginComponent {
   }
 
   onSubmit(): void {
-    const success = this.authService.login(this.email, this.password);
+    this.authService.login(this.email, this.password).then(success => {
+      if (success) {
+        this.message = 'Connexion réussie !';
 
-    if (success) {
-      this.message = 'Connexion réussie !';
+        const role = this.authService.getRole();
 
-      //  Redirection en fonction du rôle
-      const role = this.authService.getRole();
+        if (role === 'admin') {
+          this.router.navigate(['/admin-dashboard']);
+        } else {
+          this.router.navigate(['/taches']);
+        }
 
-      if (role === 'admin') {
-        this.router.navigate(['/dashboard']);
       } else {
-        this.router.navigate(['/taches']);
+        this.message = 'Email ou mot de passe incorrect.';
       }
-
-    } else {
-      this.message = 'Email ou mot de passe incorrect.';
-    }
+    });
   }
 }

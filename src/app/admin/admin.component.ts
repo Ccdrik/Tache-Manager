@@ -1,35 +1,44 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { UserService, User } from '../services/user-service';
 import { AuthService } from '../auth/auth.service';
+
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent implements OnInit {
-  users: { email: string; role: string }[] = [];
+  users: User[] = [];
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
-  loadUsers() {
-    this.users = this.authService.getAllUsers();
+  loadUsers(): void {
+    this.userService.getAllUsers().subscribe(users => {
+      this.users = users;
+    });
   }
 
-  promote(email: string) {
-    this.authService.promoteToAdmin(email);
-    this.loadUsers();
+  promote(email: string): void {
+    this.userService.promote(email).subscribe(() => {
+      this.loadUsers();
+    });
   }
 
-  delete(email: string) {
-    this.authService.deleteUser(email);
-    this.loadUsers();
+  delete(email: string): void {
+    this.userService.delete(email).subscribe(() => {
+      this.loadUsers();
+    });
   }
 
   getCurrentUser(): string | null {

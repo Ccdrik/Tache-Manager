@@ -24,13 +24,13 @@ export class RegisterComponent {
     this.isAdminLoggedIn = this.authService.isAdmin();
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.password !== this.confirmPassword) {
       this.message = 'Les mots de passe ne correspondent pas.';
       return;
     }
 
-    const success = this.authService.register(this.email, this.password, this.role);
+    const success = await this.authService.register(this.email, this.password, this.role);
 
     if (success) {
       this.message = 'Inscription réussie !';
@@ -39,4 +39,5 @@ export class RegisterComponent {
       this.message = 'Cet email est déjà utilisé.';
     }
   }
+
 }
