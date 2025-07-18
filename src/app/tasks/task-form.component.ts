@@ -17,8 +17,16 @@ export class TaskFormComponent {
 
   addTask(): void {
     if (this.newTaskTitle.trim()) {
-      this.taskService.addTask(this.newTaskTitle.trim());
-      this.newTaskTitle = ''; // Réinitialise le champ après ajout
+      const task = {
+        titre: this.newTaskTitle.trim(),
+        description: '',
+        date: '',
+        faite: false
+      };
+
+      this.taskService.addTask(task).subscribe(() => {
+        this.newTaskTitle = ''; // Réinitialise le champ après ajout
+      });
     }
   }
 }

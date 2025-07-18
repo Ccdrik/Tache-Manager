@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { UserDashboardComponent } from './dashboard/dashboard.component';
 import { TaskListComponent } from './tasks/task-list/task-list.component';
 import { TachesComponent } from './tasks/taches.component';
 import { TaskCreateComponent } from './tasks/task-create/task-create.component';
@@ -9,7 +9,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './auth/auth.guard';
 import { UnauthorizedComponent } from './auth/403.component';
 import { AdminGuard } from './auth/admin.guard';
-import { AdminComponent } from './admin/admin.component';
+
 
 // Définition des routes de l'application
 
@@ -28,7 +28,7 @@ export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
 
     //  Pages protégées par AuthGuard
-    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+    { path: 'dashboard', component: UserDashboardComponent, canActivate: [AuthGuard] },
     { path: 'taches', component: TachesComponent, canActivate: [AuthGuard] },
     { path: 'taches/ajouter', component: TaskCreateComponent, canActivate: [AuthGuard] },
     { path: 'taches/edit/:id', component: TaskEditComponent, canActivate: [AuthGuard] },

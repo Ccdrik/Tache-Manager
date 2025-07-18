@@ -9,6 +9,15 @@ export interface Task {
     description?: string;
     faite: boolean;
     date?: string;
+    checklist?: { label: string; checked: boolean }[];
+    auteur?: string;
+}
+
+export interface ChecklistItem {
+    id: number;
+    taskId: number;
+    content: string;
+    done: boolean;
 }
 
 @Injectable({
@@ -48,4 +57,34 @@ export class TaskService {
     getTaskById(id: number): Observable<Task> {
         return this.http.get<Task>(`${this.apiUrl}/${id}`);
     }
+
+    toggleChecklistItem(task: Task, index: number): Observable<any> {
+
+        const updatedChecklist = [...(task.checklist || [])];
+
+        updatedChecklist[index].checked = !updatedChecklist[index].checked;
+
+        //  On crée un nouvel objet tâche mis à jour
+        const updatedTask: Task = {
+            ...task,
+            checklist: updatedChecklist
+        };
+
+        return this.updateTask(task.id, updatedTask); // Envoi du PUT
+
+    }
+
+
+    getTaskCount(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>('http://localhost:3000/api/stats/tasks/count');
+    }
+
+    getDoneTaskCount(): Observable<{ done: number }> {
+        return this.http.get<{ done: number }>('http://localhost:3000/api/stats/tasks/done');
+    }
+
+    getUserCount(): Observable<{ total: number }> {
+        return this.http.get<{ total: number }>('http://localhost:3000/api/stats/users/count');
+    }
+
 }

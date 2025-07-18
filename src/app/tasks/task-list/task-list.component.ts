@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core'; // Importation du décorateur Component pour créer un composant Angular
-import { CommonModule } from '@angular/common'; // Importation de CommonModule pour les directives Angular de base
-import { TaskService } from '../task.service'; // Import du service TaskService
-import { RouterModule } from '@angular/router'; // Importation de FormsModule pour la gestion des formulaires
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { TaskService, Task } from '../task.service';
+import { RouterModule } from '@angular/router';
 import { AlertComponent } from '../../shared/alert.component';
-import { Task } from '../task.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, AlertComponent],
+  imports: [CommonModule, RouterModule, AlertComponent, FormsModule],
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss']
 })
@@ -16,14 +16,16 @@ export class TaskListComponent implements OnInit {
 
   allTasks: Task[] = [];
   tasks: Task[] = [];
-  filter: 'all' | 'done' | 'undone' = 'all'; //  Filtre pour les tâches
+  filter: 'all' | 'done' | 'undone' = 'all';
+  selectedDate: string = '';
+  sortDescending: boolean = true;
+  alertMessage: string = '';
+  alertType: 'success' | 'danger' = 'success';
 
-  //  Injection du service via le constructeur
   constructor(private taskService: TaskService) { }
 
-  //  Récupération des tâches au démarrage du composant
   ngOnInit(): void {
-    this.taskService.getTasks().subscribe((data) => {
+    this.taskService.getTasks().subscribe(data => {
       this.allTasks = data;
       this.applyFilter();
     });
@@ -49,32 +51,53 @@ export class TaskListComponent implements OnInit {
   }
 
   applyFilter(): void {
+    let filtered = [...this.allTasks];
+
     switch (this.filter) {
       case 'done':
-        this.tasks = this.allTasks.filter(task => task.faite);
+        filtered = filtered.filter(task => task.faite);
         break;
       case 'undone':
-        this.tasks = this.allTasks.filter(task => !task.faite);
+        filtered = filtered.filter(task => !task.faite);
         break;
-      default:
-        this.tasks = [...this.allTasks];
     }
 
+    if (this.selectedDate) {
+      filtered = filtered.filter(task => task.date === this.selectedDate);
+    }
+
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.date || '');
+      const dateB = new Date(b.date || '');
+      return this.sortDescending ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+    });
+
+    this.tasks = filtered;
+  }
+
+  toggleSortOrder(): void {
+    this.sortDescending = !this.sortDescending;
+    this.applyFilter();
   }
 
   printTasks(): void {
     window.print();
   }
 
-  alertMessage: string = '';
-  alertType: 'success' | 'danger' = 'success';
-
   showAlert(message: string, type: 'success' | 'danger'): void {
     this.alertMessage = message;
     this.alertType = type;
-    setTimeout(() => this.alertMessage = '', 3000); // disparaît après 3s
+    setTimeout(() => this.alertMessage = '', 3000);
+  }
+  toggleChecklistItem(task: Task, index: number): void {
+    this.taskService.toggleChecklistItem(task, index).subscribe(() => {
+      this.taskService.getTasks().subscribe(data => {
+        this.allTasks = data;
+        this.applyFilter();
+      });
+    });
   }
 
-
-
 }
+
+

@@ -8,7 +8,9 @@ export class AuthService {
     private readonly storageKey = 'users';
     private readonly currentUserKey = 'currentUser';
 
-    constructor() { }
+    constructor() {
+        this.initDefaultAdmin();
+    }
 
     // Enregistrement d’un utilisateur
     register(email: string, password: string, role: string = 'user'): boolean {
@@ -17,7 +19,7 @@ export class AuthService {
 
         if (userExists) return false;
 
-        users.push({ email, password, role }); // 🟢 Ajout du rôle
+        users.push({ email, password, role }); //  Ajout du rôle
         localStorage.setItem(this.storageKey, JSON.stringify(users));
         return true;
     }
@@ -84,6 +86,24 @@ export class AuthService {
 
     getCurrentUser(): any {
         return JSON.parse(localStorage.getItem('currentUser') || 'null');
+    }
+
+
+
+    private initDefaultAdmin(): void {
+        const users = this.getAllUsers();
+        const adminExists = users.some(user => user.role === 'admin');
+
+        if (!adminExists) {
+            const defaultAdmin = {
+                email: 'admin@mail.com',
+                password: 'admin123',
+                role: 'admin'
+            };
+
+            users.push(defaultAdmin);
+            localStorage.setItem('users', JSON.stringify(users));
+        }
     }
 
 }
