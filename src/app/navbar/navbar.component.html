@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light px-4">
-    <a class="navbar-brand" routerLink="/">TâcheManager</a>
+    <a class="navbar-brand" routerLink="/home">TâcheManager</a>
 
     <div class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto">
@@ -28,7 +28,7 @@
 
             <!-- Connecté -->
             <li *ngIf="isLoggedIn()" class="nav-item">
-                <span class="navbar-text me-3">{{ getUser() }}</span>
+                <a class="navbar-text me-3" routerLink="/profile"> {{ getUser() }}</a>
             </li>
             <li *ngIf="isLoggedIn()" class="nav-item">
                 <button class="btn btn-outline-secondary btn-sm" (click)="logout()">Déconnexion</button>

@@ -1,82 +1,77 @@
-# 📝 TâcheManager
+TâcheManager
+Présentation
 
-Mini application Angular pour la gestion de tâches avec :
+TâcheManager est une application web de gestion de tâches développée avec Angular pour le front-end et Node.js avec SQLite pour le back-end.
+Elle propose :
 
-- Authentification locale
-- Rôles utilisateurs (admin / user)
-- AuthGuard & AdminGuard
-- localStorage pour persistance
-- Interface avec Bootstrap
+    Un système d’authentification sécurisé avec gestion des rôles (utilisateur, admin)
 
-## 🚀 Lancer le projet
+    Un dashboard personnalisé
 
-```bash
+    Une gestion complète des tâches : création, modification, suppression, checklist
+
+Technologies utilisées
+
+    Front-end : Angular 15+, TypeScript, Bootstrap, ng2-charts
+
+    Back-end : Node.js, Express, SQLite
+
+    Authentification : JWT (JSON Web Tokens)
+
+    Outils : Git, VSCode, Postman
+
+Installation et lancement
+1. Cloner le projet
+
+git clone https://github.com/Ccdrik/Tache-Manager.git
+cd Tache-Manager
+
+2. Lancer le backend
+
+cd backend
+npm install
+node server.js
+
+    Le backend écoute sur : http://localhost:3000
+
+3. Lancer le frontend
+
+Ouvre un autre terminal :
+
+cd frontend
 npm install
 ng serve
 
+    L’application Angular sera accessible sur : http://localhost:4200
 
+Utilisation
 
+    Inscription et connexion avec rôle utilisateur ou admin
 
+    Accès au dashboard adapté au rôle
 
+    Gestion des tâches : création, édition, suppression, checklist, marquage terminé
 
+    Dashboard admin avec statistiques globales
 
+Workflow Git
 
-# TacheManager
+    La branche main contient la version stable prête à être déployée
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.1.0.
+    La branche dev est utilisée pour le développement quotidien
 
-## Development server
+    Chaque nouvelle fonctionnalité ou correction doit être développée dans une branche dédiée créée depuis dev
 
-To start a local development server, run:
+    Les modifications sont intégrées dans dev via des Pull Requests validées avant d’être fusionnées dans main
 
-```bash
-ng serve
-```
+Fonctionnalités prévues / roadmap
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+    Gestion avancée des notifications (email, push)
 
-## Code scaffolding
+    Partage de tâches entre utilisateurs
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+    Interface responsive améliorée et accessibilité renforcée
 
-```bash
-ng generate component component-name
-```
+    Tests unitaires et end-to-end automatisés
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+    Dockerisation du projet et pipeline CI/CD
