@@ -44,4 +44,14 @@ router.delete('/:id', (req, res) => {
     });
 });
 
+// GET tâche par ID
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    db.get("SELECT * FROM tasks WHERE id = ?", [id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: 'Task not found' });
+        res.json(row);
+    });
+});
+
 module.exports = router;
