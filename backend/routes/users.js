@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-// Liste des utilisateurs
+const SECRET_KEY = 'ma-cle-secrete'; // à mettre dans un .env pour plus tard
+const SALT_ROUNDS = 10;
+
+// Liste des utilisateurs (protégée)
 router.get('/', (req, res) => {
     db.all("SELECT email, role FROM users", (err, rows) => {
         if (err) return res.status(500).json({ error: err });
@@ -13,25 +18,52 @@ router.get('/', (req, res) => {
 // Enregistrement
 router.post('/register', (req, res) => {
     const { email, password, role } = req.body;
-    db.run(
-        "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-        [email, password, role || 'user'],
-        function (err) {
-            if (err) return res.status(400).json({ error: "Email déjà utilisé" });
-            res.status(201).json({ message: "Utilisateur enregistré" });
-        }
-    );
+
+    // Hash du mot de passe
+    bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
+        if (err) return res.status(500).json({ error: "Erreur serveur" });
+
+        db.run(
+            "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+            [email, hash, role || 'user'],
+            function (err) {
+                if (err) return res.status(400).json({ error: "Email déjà utilisé" });
+                res.status(201).json({ message: "Utilisateur enregistré" });
+            }
+        );
+    });
 });
 
 // Connexion
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
     db.get(
-        "SELECT * FROM users WHERE email=? AND password=?",
-        [email, password],
+        "SELECT * FROM users WHERE email=?",
+        [email],
         (err, user) => {
             if (err || !user) return res.status(401).json({ error: "Identifiants invalides" });
-            res.json({ email: user.email, role: user.role });
+
+            console.log("Utilisateur trouvé :", user); // 👈 DEBUG
+
+            bcrypt.compare(password, user.password, (err, isMatch) => {
+                if (err || !isMatch) return res.status(401).json({ error: "Identifiants invalides" });
+
+                const token = jwt.sign(
+                    { id: user.id, email: user.email, role: user.role },
+                    SECRET_KEY,
+                    { expiresIn: '2h' }
+                );
+
+                console.log("Payload du token :", { id: user.id, email: user.email, role: user.role }); // 👈 DEBUG
+                console.log("Token généré :", token); // 👈 DEBUG
+
+                res.json({
+                    message: "Connexion réussie",
+                    token,
+                    email: user.email,
+                    role: user.role
+                });
+            });
         }
     );
 });

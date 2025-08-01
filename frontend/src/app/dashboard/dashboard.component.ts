@@ -41,13 +41,13 @@ export class UserDashboardComponent implements OnInit {
     this.taskService.getTasks().subscribe((tasks: Task[]) => {
       const currentUser = localStorage.getItem('currentUser');
       const userEmail = currentUser ? JSON.parse(currentUser).email : null;
-      console.log('👤 Utilisateur connecté :', userEmail);
-      console.log('📦 Tâches récupérées :', tasks);
+      console.log(' Utilisateur connecté :', userEmail);
+      console.log(' Tâches récupérées :', tasks);
 
       if (!userEmail) return;
 
       const userTasks = tasks.filter(t => t.auteur === userEmail);
-      console.log('✅ Tâches de cet utilisateur :', userTasks);
+      console.log(' Tâches de cet utilisateur :', userTasks);
 
       this.totalTasks = userTasks.length;
       this.doneTasks = userTasks.filter(t => t.faite).length;

@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { HttpHeaders } from '@angular/common/http';
 
 export interface Task {
-    id: number;
+    id?: number;  // ✅ L'ID devient optionnel
     titre: string;
     description?: string;
     faite: boolean;
@@ -64,10 +65,15 @@ export class TaskService {
     }
 
     addTask(task: Omit<Task, 'id'>): Observable<Task> {
-        const userEmail = this.authService.getUser() ?? '';  // Si null, on met ''
+        const userEmail = this.authService.getUser() ?? '';
         const newTask = { ...task, auteur: userEmail };
-        return this.http.post<Task>(this.apiUrl, this.toApi(newTask));
+
+        const token = localStorage.getItem('token'); // Récupère le JWT
+        const headers = token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+
+        return this.http.post<Task>(this.apiUrl, this.toApi(newTask), { headers });
     }
+
 
     updateTask(id: number, task: Task): Observable<Task> {
         return this.http.put<any>(`${this.apiUrl}/${id}`, this.toApi(task)).pipe(
@@ -81,13 +87,13 @@ export class TaskService {
 
     toggleDone(task: Task): Observable<Task> {
         const updatedTask = { ...task, faite: !task.faite };
-        return this.updateTask(task.id, updatedTask);
+        return this.updateTask(task.id!, updatedTask);
     }
 
     toggleChecklistItem(task: Task, index: number): Observable<Task> {
         const updatedChecklist = [...(task.checklist || [])];
         updatedChecklist[index].checked = !updatedChecklist[index].checked;
         const updatedTask: Task = { ...task, checklist: updatedChecklist };
-        return this.updateTask(task.id, updatedTask);
+        return this.updateTask(task.id!, updatedTask);
     }
 }

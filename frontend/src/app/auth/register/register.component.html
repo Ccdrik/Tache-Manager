@@ -1,31 +1,32 @@
-<h2>Inscription</h2>
+<div class="auth-container">
+    <h2>Inscription</h2>
 
-<form (ngSubmit)="onSubmit()" class="mb-3">
-    <div class="mb-3">
-        <label>Email</label>
-        <input [(ngModel)]="email" name="email" type="email" required class="form-control" />
-    </div>
+    <form (ngSubmit)="onSubmit()" class="mb-3">
+        <div class="mb-3">
+            <label>Email</label>
+            <input [(ngModel)]="email" name="email" type="email" required class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label>Mot de passe</label>
-        <input [(ngModel)]="password" name="password" type="password" required class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label>Mot de passe</label>
+            <input [(ngModel)]="password" name="password" type="password" required class="form-control" />
+        </div>
 
-    <div class="mb-3">
-        <label>Confirmation</label>
-        <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required class="form-control" />
-    </div>
+        <div class="mb-3">
+            <label>Confirmation</label>
+            <input [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required class="form-control" />
+        </div>
 
-    <!-- 🟢 Le champ rôle s’affiche seulement si c’est un admin -->
-    <div class="mb-3" *ngIf="isAdminLoggedIn">
-        <label>Rôle</label>
-        <select [(ngModel)]="role" name="role" class="form-select">
-            <option value="user">Utilisateur</option>
-            <option value="admin">Administrateur</option>
-        </select>
-    </div>
+        <div class="mb-3" *ngIf="isAdminLoggedIn">
+            <label>Rôle</label>
+            <select [(ngModel)]="role" name="role" class="form-select">
+                <option value="user">Utilisateur</option>
+                <option value="admin">Administrateur</option>
+            </select>
+        </div>
 
-    <button type="submit" class="btn btn-primary">S'inscrire</button>
-</form>
+        <button type="submit">S'inscrire</button>
+    </form>
 
-<p class="text-danger">{{ message }}</p>
+    <p class="text-danger">{{ message }}</p>
+</div>

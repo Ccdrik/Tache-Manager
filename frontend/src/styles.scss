@@ -1,1 +1,51 @@
-/* You can add global styles to this file, and also import other style files */
+/* Variables simples */
+$primary: #3498db;
+$bg: #f7f7f7;
+
+body {
+    background: $bg;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Container central */
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 15px;
+}
+
+/* Navbar simple */
+.navbar {
+    background: $primary;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+
+    a {
+        color: #fff;
+        margin: 0 8px;
+        text-decoration: none;
+    }
+}
+
+/* Boutons */
+button {
+    background: $primary;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Formulaires */
+input,
+textarea {
+    width: 100%;
+    padding: 6px;
+    margin: 6px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

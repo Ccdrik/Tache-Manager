@@ -1,69 +1,58 @@
-<!-- Alerte -->
-<app-alert [message]="alertMessage" [type]="alertType"></app-alert>
-
-<!-- Bouton "Nouvelle tâche" -->
-<div class="text-end mb-3">
-    <a class="btn btn-primary" [routerLink]="['/taches/ajouter']">+ Nouvelle tâche</a>
+<div class="tasks-header">
+    <h2>Mes tâches</h2>
+    <div class="task-actions-header">
+        <button class="btn-add" (click)="addTask()">+ Tâche rapide</button>
+        <button class="btn-add" [routerLink]="'/taches/ajouter'">+ Nouvelle tâche avancée</button>
+    </div>
 </div>
 
 <!-- Filtres -->
-<div class="btn-group mb-3">
-    <button class="btn btn-outline-secondary" [class.active]="filter === 'all'"
-        (click)="filter = 'all'; applyFilter()">Toutes</button>
-    <button class="btn btn-outline-secondary" [class.active]="filter === 'undone'"
-        (click)="filter = 'undone'; applyFilter()">À faire</button>
-    <button class="btn btn-outline-secondary" [class.active]="filter === 'done'"
-        (click)="filter = 'done'; applyFilter()">Terminées</button>
-</div>
+<div class="filters">
+    <div class="filter-buttons">
+        <button class="filter-btn" [class.active]="filter === 'all'"
+            (click)="filter='all'; applyFilter()">Toutes</button>
+        <button class="filter-btn" [class.active]="filter === 'undone'" (click)="filter='undone'; applyFilter()">À
+            faire</button>
+        <button class="filter-btn" [class.active]="filter === 'done'"
+            (click)="filter='done'; applyFilter()">Terminées</button>
+    </div>
 
-<!-- Filtre par date -->
-<div class="mb-3">
-    <label for="dateFilter" class="form-label">Filtrer par date :</label>
-    <input type="date" id="dateFilter" class="form-control w-auto" [(ngModel)]="selectedDate"
-        (change)="applyFilter()" />
-</div>
+    <div class="filter-options">
+        <label>
+            Filtrer par date :
+            <input type="date" [(ngModel)]="selectedDate" (change)="applyFilter()">
+        </label>
 
-<!-- Tri -->
-<div class="mb-3">
-    <button class="btn btn-outline-dark" (click)="toggleSortOrder()">
-        Trier par date : {{ sortDescending ? 'récent → ancien' : 'ancien → récent' }}
-    </button>
+        <button class="sort-btn" (click)="toggleSortOrder()">
+            Trier : {{ sortDescending ? 'Récent → Ancien' : 'Ancien → Récent' }}
+        </button>
+    </div>
 </div>
 
 <!-- Liste des tâches -->
-<ul class="list-group mt-3">
-    <li *ngFor="let task of tasks" class="list-group-item d-flex flex-column">
+<ul class="task-list">
+    <li *ngFor="let task of tasks" class="task-item" [class.completed]="task.faite">
+        <div class="task-info">
+            <h3>{{ task.titre }}</h3>
+            <p *ngIf="task.description">{{ task.description }}</p>
+            <span class="task-date">{{ task.date | date:'dd/MM/yyyy' }}</span>
 
-        <!-- Titre & description -->
-        <div class="d-flex justify-content-between align-items-center w-100">
-            <div class="flex-grow-1">
-                <span class="fw-bold" [class.text-decoration-line-through]="task.faite" (click)="toggleDone(task)"
-                    style="cursor: pointer">
-                    {{ task.titre }}
-                </span>
-                <br />
-                <small class="text-muted">{{ task.description || 'Aucune description' }}</small>
-            </div>
-
-            <!-- Actions -->
-            <div class="ms-3">
-                <button class="btn btn-outline-success btn-sm me-2" (click)="toggleDone(task)">
-                    {{ task.faite ? 'Annuler' : 'Terminer' }}
-                </button>
-                <button class="btn btn-outline-danger btn-sm me-2" (click)="deleteTask(task.id)">Supprimer</button>
-                <button class="btn btn-outline-primary btn-sm"
-                    [routerLink]="['/taches/edit', task.id]">Modifier</button>
+            <!-- Checklist -->
+            <div *ngIf="task.checklist && task.checklist.length > 0" class="checklist">
+                <label *ngFor="let item of task.checklist; let i = index">
+                    <input type="checkbox" [checked]="item.checked" (change)="toggleChecklistItem(task, i)">
+                    {{ item.label }}
+                </label>
             </div>
         </div>
 
-        <!-- Checklist associée -->
-        <ul class="list-group mt-2" *ngIf="task.checklist && task.checklist.length">
-            <li class="list-group-item d-flex align-items-center" *ngFor="let item of task.checklist; let i = index">
-                <input type="checkbox" class="form-check-input me-2" [checked]="item.checked"
-                    (change)="toggleChecklistItem(task, i)" />
-                <span [class.text-decoration-line-through]="item.checked">{{ item.label }}</span>
-            </li>
-        </ul>
-
+        <div class="task-actions">
+            <button class="btn-done" (click)="toggleDone(task)">✔</button>
+            <button class="btn-edit" (click)="editTask(task)">✎</button>
+            <button class="btn-delete" *ngIf="task.id !== undefined" (click)="deleteTask(task.id)">🗑</button>
+        </div>
     </li>
 </ul>
+
+<!-- Alert -->
+<app-alert *ngIf="alertMessage" [type]="alertType" [message]="alertMessage"></app-alert>
